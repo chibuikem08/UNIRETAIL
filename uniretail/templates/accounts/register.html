@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+
+      <div class="text-center mb-4">
+        <div style="font-size:2.8rem; color:var(--primary);">
+          <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <h2 class="fw-bold mt-2">Join UniRetail</h2>
+        <p class="text-muted">Create your account to start shopping or selling</p>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                {{ form.first_name }}
+              </div>
+              <div class="col-sm-6">
+                <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                {{ form.last_name }}
+              </div>
+              <div class="col-12">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                  <div class="text-danger small mt-1">{{ form.username.errors|join:" " }}</div>
+                {% endif %}
+              </div>
+              <div class="col-sm-8">
+                <label for="{{ form.email.id_for_label }}">Email Address</label>
+                {{ form.email }}
+              </div>
+              <div class="col-sm-4">
+                <label for="{{ form.phone_number.id_for_label }}">Phone</label>
+                {{ form.phone_number }}
+              </div>
+              <div class="col-12">
+                <label for="{{ form.role.id_for_label }}">I am a…</label>
+                {{ form.role }}
+                <div class="form-text">Vendors require admin approval before their shop goes live.</div>
+              </div>
+              <div class="col-sm-6">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                  <div class="text-danger small mt-1">{{ form.password1.errors|join:" " }}</div>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                  <div class="text-danger small mt-1">{{ form.password2.errors|join:" " }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-accent w-100 mt-4 py-2">
+              <i class="bi bi-person-check me-2"></i>Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <p class="text-center text-muted mt-3 small">
+        Already have an account? <a href="{% url 'accounts:login' %}" class="fw-semibold" style="color:var(--primary)">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+  <div style="font-size:5rem;font-weight:800;color:var(--border);line-height:1;">500</div>
+  <div style="font-size:2.5rem;color:#dc2626;margin-top:-.5rem;">
+    <i class="bi bi-exclamation-triangle"></i>
+  </div>
+  <h3 class="fw-bold mt-3">Something Went Wrong</h3>
+  <p class="text-muted mb-4">An unexpected error occurred. Please try again later.</p>
+  <a href="{% url 'shops:home' %}" class="btn btn-accent px-4">
+    <i class="bi bi-house me-2"></i>Go Home
+  </a>
+</div>
+{% endblock %}

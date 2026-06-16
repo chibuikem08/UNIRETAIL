@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+  <div style="font-size:5rem;font-weight:800;color:var(--border);line-height:1;">404</div>
+  <div style="font-size:2.5rem;color:var(--primary);margin-top:-.5rem;">
+    <i class="bi bi-search"></i>
+  </div>
+  <h3 class="fw-bold mt-3">Page Not Found</h3>
+  <p class="text-muted mb-4">The page you're looking for doesn't exist or has been moved.</p>
+  <div class="d-flex gap-2 justify-content-center">
+    <a href="{% url 'shops:home' %}" class="btn btn-accent px-4">
+      <i class="bi bi-house me-2"></i>Go Home
+    </a>
+    <button onclick="history.back()" class="btn btn-outline-secondary px-4">
+      <i class="bi bi-arrow-left me-2"></i>Go Back
+    </button>
+  </div>
+</div>
+{% endblock %}

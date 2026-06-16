@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h3 class="fw-bold mb-1">
+    <i class="bi bi-shield-check me-2" style="color:var(--primary)"></i>Admin Dashboard
+  </h3>
+  <p class="text-muted mb-4">Platform overview and management</p>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-lg-3">
+      <div class="card text-center p-3">
+        <div style="font-size:1.8rem;font-weight:700;color:var(--primary);">{{ total_users }}</div>
+        <div class="text-muted small">Total Users</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card text-center p-3">
+        <div style="font-size:1.8rem;font-weight:700;color:var(--primary);">{{ total_shops }}</div>
+        <div class="text-muted small">Active Shops</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card text-center p-3">
+        <div style="font-size:1.8rem;font-weight:700;color:var(--primary);">{{ total_orders }}</div>
+        <div class="text-muted small">Total Orders</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card text-center p-3">
+        <div style="font-size:1.8rem;font-weight:700;color:#16a34a;">₦{{ total_revenue }}</div>
+        <div class="text-muted small">Revenue Processed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Pending Vendor Approvals -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <span>Pending Vendor Approvals</span>
+          {% if pending_vendors > 0 %}
+            <span class="badge bg-danger">{{ pending_vendors }}</span>
+          {% endif %}
+        </div>
+        <div class="card-body p-0">
+          {% if pending_vendor_list %}
+            {% for vendor in pending_vendor_list %}
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+              <div>
+                <div class="fw-semibold" style="font-size:.92rem;">{{ vendor.get_full_name|default:vendor.username }}</div>
+                <small class="text-muted">{{ vendor.email }}</small>
+              </div>
+              <a href="{% url 'dashboard:approve_vendor' vendor.pk %}"
+                 class="btn btn-sm btn-success">
+                <i class="bi bi-check-lg me-1"></i>Approve
+              </a>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-4 text-muted small">
+              <i class="bi bi-check-circle me-1"></i>No pending approvals
+            </div>
+          {% endif %}
+        </div>
+        <div class="card-footer bg-transparent">
+          <a href="{% url 'dashboard:admin_users' %}?role=VENDOR"
+             class="text-decoration-none small" style="color:var(--primary);">
+            View all vendors <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <span>Recent Orders</span>
+          <a href="{% url 'dashboard:admin_orders' %}" class="btn btn-sm btn-outline-light">
+            View All
+          </a>
+        </div>
+        <div class="card-body p-0">
+          {% if recent_orders %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead style="background:var(--surface);">
+                <tr>
+                  <th class="ps-4">Order</th>
+                  <th>Buyer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                  <td class="ps-4"><strong>#{{ order.pk }}</strong></td>
+                  <td><small>{{ order.buyer.get_full_name|default:order.buyer.username }}</small></td>
+                  <td><strong>₦{{ order.total_price }}</strong></td>
+                  <td>
+                    {% if order.status == 'PENDING' %}
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif order.status == 'CONFIRMED' %}
+                      <span class="badge bg-primary">Confirmed</span>
+                    {% elif order.status == 'READY' %}
+                      <span class="badge bg-success">Ready</span>
+                    {% elif order.status == 'COMPLETED' %}
+                      <span class="badge bg-secondary">Picked Up</span>
+                    {% elif order.status == 'CANCELLED' %}
+                      <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <div class="text-center py-4 text-muted small">No orders yet</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Links -->
+  <div class="row g-3 mt-2">
+    <div class="col-sm-4">
+      <a href="{% url 'dashboard:admin_users' %}" class="card text-decoration-none text-center p-3 d-block">
+        <i class="bi bi-people" style="font-size:1.5rem;color:var(--primary)"></i>
+        <div class="fw-semibold mt-2 small">Manage Users</div>
+      </a>
+    </div>
+    <div class="col-sm-4">
+      <a href="{% url 'dashboard:admin_orders' %}" class="card text-decoration-none text-center p-3 d-block">
+        <i class="bi bi-receipt" style="font-size:1.5rem;color:var(--primary)"></i>
+        <div class="fw-semibold mt-2 small">All Orders</div>
+      </a>
+    </div>
+    <div class="col-sm-4">
+      <a href="/admin/" class="card text-decoration-none text-center p-3 d-block">
+        <i class="bi bi-gear" style="font-size:1.5rem;color:var(--primary)"></i>
+        <div class="fw-semibold mt-2 small">Django Admin</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

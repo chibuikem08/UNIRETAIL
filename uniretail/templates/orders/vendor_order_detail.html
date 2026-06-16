@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.pk }} — Vendor View{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+          <a href="{% url 'orders:vendor_orders' %}" class="text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i>All Orders
+          </a>
+          <h3 class="fw-bold mt-1 mb-0">Order #{{ order.pk }}</h3>
+          <small class="text-muted">
+            From <strong>{{ order.buyer.get_full_name|default:order.buyer.username }}</strong>
+            &nbsp;·&nbsp; {{ order.created_at|date:"d M Y, H:i" }}
+          </small>
+        </div>
+        {% if order.status == 'PENDING' %}
+          <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-clock"></i> Pending</span>
+        {% elif order.status == 'CONFIRMED' %}
+          <span class="badge bg-primary fs-6 px-3 py-2"><i class="bi bi-check-circle"></i> Confirmed</span>
+        {% elif order.status == 'READY' %}
+          <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-bell"></i> Ready for Pickup</span>
+        {% elif order.status == 'COMPLETED' %}
+          <span class="badge bg-secondary fs-6 px-3 py-2"><i class="bi bi-check"></i> Picked Up</span>
+        {% elif order.status == 'CANCELLED' %}
+          <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-x"></i> Cancelled</span>
+        {% endif %}
+      </div>
+
+      <!-- Items -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header py-3">Items Ordered from Your Shop</div>
+        <div class="card-body p-0">
+          {% for item in items %}
+          <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+              <div style="width:44px;height:44px;border-radius:8px;overflow:hidden;
+                          background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                {% if item.product.image %}
+                  <img src="{{ item.product.image.url }}" style="width:100%;height:100%;object-fit:cover;">
+                {% else %}
+                  <i class="bi bi-image text-muted small"></i>
+                {% endif %}
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:.92rem;">{{ item.product.name }}</div>
+                <small class="text-muted">{{ item.quantity }} × ₦{{ item.unit_price }}</small>
+              </div>
+            </div>
+            <strong>₦{{ item.subtotal }}</strong>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="card-footer d-flex justify-content-between fw-bold py-3 px-4">
+          <span>Total</span>
+          <span style="color:var(--primary);">₦{{ order.total_price }}</span>
+        </div>
+      </div>
+
+      {% if order.note %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+          <strong class="small"><i class="bi bi-chat-left-text me-2"></i>Customer Note:</strong>
+          <p class="text-muted small mb-0 mt-1">{{ order.note }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Status Update Actions -->
+      {% if order.status != 'CANCELLED' and order.status != 'COMPLETED' %}
+      <div class="card shadow-sm">
+        <div class="card-header py-3">Update Order Status</div>
+        <div class="card-body p-4">
+          <form method="post" class="d-flex gap-2 flex-wrap">
+            {% csrf_token %}
+            {% if order.status == 'PENDING' %}
+              <button type="submit" name="status" value="CONFIRMED" class="btn btn-primary px-4">
+                <i class="bi bi-check-circle me-2"></i>Confirm Order
+              </button>
+              <p class="text-muted small w-100 mb-0 mt-2">Confirm to let the customer know you're preparing their order.</p>
+            {% elif order.status == 'CONFIRMED' %}
+              <button type="submit" name="status" value="READY" class="btn btn-success px-4">
+                <i class="bi bi-bell me-2"></i>Mark as Ready for Pickup
+              </button>
+              <p class="text-muted small w-100 mb-0 mt-2">The customer will see their order is ready to collect.</p>
+            {% elif order.status == 'READY' %}
+              <button type="submit" name="status" value="COMPLETED" class="btn btn-secondary px-4">
+                <i class="bi bi-house-check me-2"></i>Mark as Picked Up
+              </button>
+              <p class="text-muted small w-100 mb-0 mt-2">Mark this once the customer has collected their order.</p>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

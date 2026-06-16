@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}All Orders{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <a href="{% url 'dashboard:admin_dashboard' %}" class="text-muted text-decoration-none small">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+      </a>
+      <h3 class="fw-bold mt-1 mb-0"><i class="bi bi-receipt me-2" style="color:var(--primary)"></i>All Orders</h3>
+    </div>
+    <form method="get" class="d-flex gap-2">
+      <select name="status" class="form-select form-select-sm" style="width:180px;">
+        <option value="">All Statuses</option>
+        {% for val, label in status_choices %}
+          <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-sm btn-outline-secondary" type="submit">Filter</button>
+      {% if status_filter %}
+        <a href="{% url 'dashboard:admin_orders' %}" class="btn btn-sm btn-outline-danger">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:var(--surface);">
+          <tr>
+            <th class="ps-4">Order #</th>
+            <th>Buyer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td class="ps-4"><strong>#{{ order.pk }}</strong></td>
+            <td>
+              <div style="font-size:.88rem;">{{ order.buyer.get_full_name|default:order.buyer.username }}</div>
+              <small class="text-muted">{{ order.buyer.get_role_display }}</small>
+            </td>
+            <td><small class="text-muted">{{ order.item_count }} item{{ order.item_count|pluralize }}</small></td>
+            <td><strong>₦{{ order.total_price }}</strong></td>
+            <td>
+              {% if order.payment.status == 'SUCCESS' %}
+                <span class="badge bg-success">Paid</span>
+              {% elif order.payment.status == 'PENDING' %}
+                <span class="badge bg-warning text-dark">Unpaid</span>
+              {% else %}
+                <span class="badge bg-secondary">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if order.status == 'PENDING' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% elif order.status == 'CONFIRMED' %}
+                <span class="badge bg-primary">Confirmed</span>
+              {% elif order.status == 'READY' %}
+                <span class="badge bg-success">Ready</span>
+              {% elif order.status == 'COMPLETED' %}
+                <span class="badge bg-secondary">Picked Up</span>
+              {% elif order.status == 'CANCELLED' %}
+                <span class="badge bg-danger">Cancelled</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ order.created_at|date:"d M, H:i" }}</small></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

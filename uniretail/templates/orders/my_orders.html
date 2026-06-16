@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h3 class="fw-bold mb-4"><i class="bi bi-receipt me-2" style="color:var(--primary)"></i>My Orders</h3>
+
+  {% if orders %}
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:var(--surface);">
+          <tr>
+            <th class="ps-4">Order #</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td class="ps-4"><strong>#{{ order.pk }}</strong></td>
+            <td>
+              <small class="text-muted">
+                {% for item in order.items.all|slice:":2" %}
+                  {{ item.product.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                {% if order.item_count > 2 %}
+                  <span>+{{ order.item_count|add:"-2" }} more</span>
+                {% endif %}
+              </small>
+            </td>
+            <td><strong>₦{{ order.total_price }}</strong></td>
+            <td>
+              {% if order.status == 'PENDING' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% elif order.status == 'CONFIRMED' %}
+                <span class="badge bg-primary">Confirmed</span>
+              {% elif order.status == 'READY' %}
+                <span class="badge bg-success">Ready for Pickup</span>
+              {% elif order.status == 'COMPLETED' %}
+                <span class="badge bg-secondary">Picked Up</span>
+              {% elif order.status == 'CANCELLED' %}
+                <span class="badge bg-danger">Cancelled</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ order.created_at|date:"d M Y, H:i" }}</small></td>
+            <td class="text-end pe-4">
+              <a href="{% url 'orders:order_detail' order.pk %}"
+                 class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye me-1"></i>View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-receipt" style="font-size:3.5rem;color:var(--border)"></i>
+    <h5 class="mt-3 text-muted">No orders yet</h5>
+    <a href="{% url 'shops:home' %}" class="btn btn-accent mt-3 px-5">
+      <i class="bi bi-shop me-2"></i>Start Shopping
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

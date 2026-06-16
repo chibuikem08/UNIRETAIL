@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}My Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 class="fw-bold mb-0">
+            <i class="bi bi-shop me-2" style="color:var(--primary)"></i>
+            {% if shop %}Edit My Shop{% else %}Create My Shop{% endif %}
+          </h3>
+          <p class="text-muted small mb-0 mt-1">This is your storefront that buyers will see</p>
+        </div>
+        {% if shop %}
+          <a href="{{ shop.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-eye me-1"></i>View Shop
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header py-3">Shop Details</div>
+        <div class="card-body p-4">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-sm-8">
+                <label>Shop Name *</label>
+                {{ form.name }}
+              </div>
+              <div class="col-sm-4">
+                <label>Category *</label>
+                {{ form.category }}
+              </div>
+              <div class="col-12">
+                <label>Description</label>
+                {{ form.description }}
+              </div>
+              <div class="col-12">
+                <label>Shop Logo</label>
+                {% if shop.logo %}
+                  <div class="mb-2">
+                    <img src="{{ shop.logo.url }}" width="70" height="70"
+                         class="rounded border object-fit-cover" alt="Logo">
+                  </div>
+                {% endif %}
+                {{ form.logo }}
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  {{ form.is_open }}
+                  <label class="form-check-label ms-2" for="{{ form.is_open.id_for_label }}">
+                    Shop is open (visible to buyers)
+                  </label>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-accent mt-4 px-5">
+              <i class="bi bi-check-lg me-2"></i>Save Shop
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% if shop %}
+      <div class="mt-4 p-3 rounded" style="background:var(--accent-lt);border:1px solid #f0d090;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Products</strong>
+            <span class="text-muted small ms-2">{{ shop.product_count }} listed</span>
+          </div>
+          <a href="{% url 'shops:product_list' %}" class="btn btn-sm btn-accent">
+            <i class="bi bi-box-seam me-1"></i>Manage Products
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

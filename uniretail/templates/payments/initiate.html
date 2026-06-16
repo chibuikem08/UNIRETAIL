@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Pay for Order #{{ order.pk }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+
+      <div class="text-center mb-4">
+        <div style="font-size:2.8rem;color:var(--primary)">
+          <i class="bi bi-credit-card-fill"></i>
+        </div>
+        <h3 class="fw-bold mt-2">Complete Payment</h3>
+        <p class="text-muted">Order #{{ order.pk }}</p>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-header py-3">Order Summary</div>
+        <div class="card-body p-0">
+          {% for item in order.items.all %}
+          <div class="d-flex justify-content-between px-4 py-2 border-bottom">
+            <span class="text-muted">{{ item.quantity }} × {{ item.product.name }}</span>
+            <strong>₦{{ item.subtotal }}</strong>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="card-footer d-flex justify-content-between fw-bold py-3 px-4">
+          <span>Total</span>
+          <span style="color:var(--primary);font-size:1.15rem;">₦{{ order.total_price }}</span>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+          {% if paystack_pub_key %}
+          <p class="text-muted small mb-3">
+            <i class="bi bi-lock-fill me-1 text-success"></i>
+            Secure payment powered by Paystack
+            {% if subaccount_code %}
+              · Payment goes directly to vendor
+            {% endif %}
+          </p>
+
+          <button id="paystack-btn" class="btn btn-accent w-100 py-2 fw-semibold">
+            <i class="bi bi-credit-card me-2"></i>Pay ₦{{ order.total_price }} Now
+          </button>
+
+          <script src="https://js.paystack.co/v1/inline.js"></script>
+          <script>
+            document.getElementById('paystack-btn').addEventListener('click', function() {
+              var config = {
+                key:      '{{ paystack_pub_key }}',
+                email:    '{{ email }}',
+                amount:   {{ amount_kobo }},
+                currency: 'NGN',
+                ref:      '{{ reference }}',
+                callback: function(response) {
+                  window.location.href = "{% url 'payments:verify' reference %}";
+                },
+                onClose: function() {
+                  alert('Payment window closed.');
+                }
+              };
+
+              {% if subaccount_code %}
+              // Split payment — vendor receives their share directly
+              config.subaccount = '{{ subaccount_code }}';
+              config.bearer     = 'subaccount';  // vendor bears the transaction fee
+              {% endif %}
+
+              var handler = PaystackPop.setup(config);
+              handler.openIframe();
+            });
+          </script>
+
+          {% else %}
+          <div class="alert alert-info small mb-3">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Demo Mode:</strong> No Paystack keys configured. Clicking below simulates a successful payment.
+          </div>
+          <div class="d-flex justify-content-between fw-bold mb-4 p-3 rounded"
+               style="background:var(--accent-lt);">
+            <span>Amount to Pay</span>
+            <span style="color:var(--primary);">₦{{ order.total_price }}</span>
+          </div>
+          <a href="{% url 'payments:verify' reference %}" class="btn btn-accent w-100 py-2 fw-semibold">
+            <i class="bi bi-bag-check me-2"></i>Simulate Payment (Demo)
+          </a>
+          {% endif %}
+
+          <a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-outline-secondary w-100 mt-2">
+            <i class="bi bi-arrow-left me-1"></i>Back to Order
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+
+      <div class="text-center mb-4">
+        <div style="font-size:2.8rem; color:var(--primary);">
+          <i class="bi bi-bag-heart-fill"></i>
+        </div>
+        <h2 class="fw-bold mt-2">Welcome back</h2>
+        <p class="text-muted">Sign in to your UniRetail account</p>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger small">{{ form.non_field_errors|join:" " }}</div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.password.id_for_label }}">Password</label>
+              {{ form.password }}
+            </div>
+
+            <button type="submit" class="btn btn-accent w-100 py-2 mt-1">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <p class="text-center text-muted mt-3 small">
+        Don't have an account?
+        <a href="{% url 'accounts:register' %}" class="fw-semibold" style="color:var(--primary)">Register here</a>
+      </p>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

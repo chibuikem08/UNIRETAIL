@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Bank Account Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+
+      <div class="mb-4">
+        <a href="{% url 'dashboard:vendor_dashboard' %}" class="text-muted text-decoration-none small">
+          <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+        <h3 class="fw-bold mt-2 mb-0">
+          <i class="bi bi-bank me-2" style="color:var(--primary)"></i>Bank Account Details
+        </h3>
+        <p class="text-muted small mt-1">
+          Your bank details are used by Paystack to send you payments directly when customers pay for orders.
+        </p>
+      </div>
+
+      {% if instance and instance.has_subaccount %}
+      <div class="alert alert-success d-flex gap-3 align-items-start mb-4">
+        <i class="bi bi-check-circle-fill fs-5 mt-1"></i>
+        <div>
+          <strong>Subaccount Active</strong>
+          <p class="mb-0 small">
+            Your Paystack subaccount is set up and payments will be split automatically.
+            Subaccount code: <code>{{ instance.subaccount_code }}</code>
+          </p>
+        </div>
+      </div>
+      {% elif instance and not instance.has_subaccount %}
+      <div class="alert alert-warning d-flex gap-3 align-items-start mb-4">
+        <i class="bi bi-clock-fill fs-5 mt-1"></i>
+        <div>
+          <strong>Pending Activation</strong>
+          <p class="mb-0 small">
+            Your bank details have been saved. An admin will activate your Paystack subaccount shortly.
+          </p>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="card shadow-sm">
+        <div class="card-header py-3">
+          {% if instance %}Update Bank Details{% else %}Add Bank Details{% endif %}
+        </div>
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-12">
+                <label>Bank Name *</label>
+                {{ form.bank_code }}
+                {% if form.bank_code.errors %}
+                  <div class="text-danger small mt-1">{{ form.bank_code.errors|join:" " }}</div>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <label>Account Number *</label>
+                {{ form.account_number }}
+                {% if form.account_number.errors %}
+                  <div class="text-danger small mt-1">{{ form.account_number.errors|join:" " }}</div>
+                {% endif %}
+                <div class="form-text">Must be exactly 10 digits</div>
+              </div>
+              <div class="col-sm-6">
+                <label>Account Name *</label>
+                {{ form.account_name }}
+                <div class="form-text">As it appears on your bank record</div>
+              </div>
+              <div class="col-12">
+                <label>BVN <span class="text-muted">(optional)</span></label>
+                {{ form.bvn }}
+                <div class="form-text">Recommended for faster verification</div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 rounded" style="background:var(--accent-lt);border:1px solid #f0d090;">
+              <p class="small mb-0">
+                <i class="bi bi-info-circle me-2" style="color:var(--accent)"></i>
+                <strong>How it works:</strong> When a student pays for an order,
+                Paystack automatically sends <strong>{{ instance.platform_charge_percent|default:"5" }}%</strong> to the platform
+                and <strong>{{ instance.platform_charge_percent|default:"5"|add:"-5"|add:"100" }}%</strong> directly to your bank account.
+                No manual transfers needed.
+              </p>
+            </div>
+
+            <button type="submit" class="btn btn-accent mt-4 px-5">
+              <i class="bi bi-check-lg me-2"></i>Save Bank Details
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
