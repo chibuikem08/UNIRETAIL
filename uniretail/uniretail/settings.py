@@ -137,7 +137,7 @@ else:
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@uniretail.example.com')
 
 # Site URL for email links (used in email templates)
-SITE_URL = config('SITE_URL', default='http://localhost:8000')
+SITE_URL = config('SITE_URL', default='https://uniretail-production.up.railway.app')
 
 # Support email for customer inquiries in emails
 SUPPORT_EMAIL = config('SUPPORT_EMAIL', default='support@uniretail.example.com')
