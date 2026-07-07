@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
 from accounts.models import CustomUser
+from accounts.email import send_vendor_approval_email, send_vendor_revocation_email
 from shops.models import Shop, Product
 from orders.models import Order
 from payments.models import Payment, VendorBankAccount
@@ -108,7 +109,20 @@ def approve_vendor(request, user_pk):
     vendor = get_object_or_404(CustomUser, pk=user_pk, role='VENDOR')
     vendor.is_approved_vendor = True
     vendor.save(update_fields=['is_approved_vendor'])
-    messages.success(request, f'{vendor.username} has been approved as a vendor.')
+    
+    # Send approval email to vendor
+    try:
+        send_vendor_approval_email(vendor)
+        messages.success(
+            request,
+            f'{vendor.username} has been approved as a vendor. Approval email sent.'
+        )
+    except Exception as e:
+        messages.warning(
+            request,
+            f'{vendor.username} has been approved, but email notification failed: {str(e)}'
+        )
+    
     return redirect('dashboard:admin_dashboard')
 
 
@@ -117,7 +131,20 @@ def revoke_vendor(request, user_pk):
     vendor = get_object_or_404(CustomUser, pk=user_pk, role='VENDOR')
     vendor.is_approved_vendor = False
     vendor.save(update_fields=['is_approved_vendor'])
-    messages.warning(request, f'{vendor.username}\'s vendor access has been revoked.')
+    
+    # Send revocation email to vendor
+    try:
+        send_vendor_revocation_email(vendor)
+        messages.warning(
+            request,
+            f'{vendor.username}\'s vendor access has been revoked. Revocation email sent.'
+        )
+    except Exception as e:
+        messages.warning(
+            request,
+            f'{vendor.username}\'s vendor access has been revoked, but email notification failed: {str(e)}'
+        )
+    
     return redirect('dashboard:admin_users')
 
 
