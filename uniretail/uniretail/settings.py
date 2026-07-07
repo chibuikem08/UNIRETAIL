@@ -118,3 +118,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Leave blank to use demo/simulation mode (good for development)
 PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY', default='')
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='')
+
+# ── Email Configuration ───────────────────────────────────────────────────────
+# Email backend for sending notifications
+if DEBUG:
+    # Use console email backend for development (prints emails to console)
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Use SMTP for production
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# Default sender email for all notifications
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@uniretail.example.com')
+
+# Site URL for email links (used in email templates)
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
+
+# Support email for customer inquiries in emails
+SUPPORT_EMAIL = config('SUPPORT_EMAIL', default='support@uniretail.example.com')
