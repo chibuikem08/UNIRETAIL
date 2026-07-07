@@ -1,4 +1,4 @@
-﻿Django==4.2.13
+Django==4.2.13
 psycopg2-binary
 Pillow
 python-decouple==3.8
