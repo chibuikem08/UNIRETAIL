@@ -1,0 +1,17 @@
+Hello {{ vendor_name }},
+
+We regret to inform you that your vendor account access has been revoked by our admin team.
+
+What this means:
+- You will no longer be able to access your vendor dashboard
+- Your shop will no longer be visible to customers
+- You cannot manage products or process orders
+
+If you believe this is a mistake or would like to discuss this decision, please contact our support team at {{ support_email }}.
+
+Best regards,
+The UniRetail Team
+
+---
+This is an automated message. Please do not reply to this email.
+© 2024 UniRetail. All rights reserved.

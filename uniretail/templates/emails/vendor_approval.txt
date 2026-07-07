@@ -1,0 +1,21 @@
+Hello {{ vendor_name }},
+
+Great news! Your vendor account has been approved by our admin team. You can now start managing your shop and selling products on UniRetail.
+
+What's next?
+- Log in to your vendor dashboard
+- Set up your shop profile and upload your logo
+- Add your products to the marketplace
+- Start receiving orders from customers
+
+To access your vendor dashboard and start managing your shop, visit:
+{{ dashboard_url }}
+
+If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+Best regards,
+The UniRetail Team
+
+---
+This is an automated message. Please do not reply to this email.
+© 2024 UniRetail. All rights reserved.
